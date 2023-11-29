@@ -1,0 +1,65 @@
+from datetime import datetime
+
+from selene import browser, have, be
+
+
+def test_fill_practice_form():
+    browser.open('/')
+
+    browser.element('#userName-label').should(have.exact_text('Name'))
+    browser.element('#firstName').should(be.blank)
+    browser.element('#firstName').should(have.attribute('placeholder').value('First Name'))
+    browser.element('#firstName').type('Sergey').press_enter()
+
+    browser.element('#lastName').should(be.blank)
+    browser.element('#lastName').should(have.attribute('placeholder').value('Last Name'))
+    browser.element('#lastName').type('Dikov').press_enter()
+
+    browser.element('#userEmail-label').should(have.exact_text('Email'))
+    browser.element('#userEmail').should(be.blank)
+    browser.element('#userEmail').should(have.attribute('placeholder').value('name@example.com'))
+    browser.element('#userEmail').type('dikovsa@mail.ru').press_enter()
+
+    browser.element('#genterWrapper > div.col-md-3.col-sm-12').should(have.exact_text('Gender'))
+    browser.all('[for*=gender-radio]').element_by(have.text('Male')).click()
+
+    browser.element('#userNumber-label').should(have.exact_text('Mobile(10 Digits)'))
+    browser.element('#userNumber-label > small').should(have.exact_text('(10 Digits)'))
+    browser.element('#userNumber').should(be.blank)
+    browser.element('#userNumber').should(have.attribute('placeholder').value('Mobile Number'))
+    browser.element('#userNumber').type('9101234567')
+
+    browser.element('#dateOfBirth-label').should(have.exact_text('Date of Birth'))
+    browser.element('#dateOfBirthInput').should(have.value(datetime.now().strftime("%d %b %Y")))
+    browser.element('#dateOfBirthInput').click()
+    browser.all('.react-datepicker__month-select>option').element_by(have.exact_text('June')).click()
+    browser.all('.react-datepicker__year-select>option').element_by(have.exact_text('1989')).click()
+    browser.all('*.react-datepicker__day').element_by(have.text('15')).click()
+    # browser.element('#dateOfBirthInput').should(have.value('15 Jun 1989'))
+
+    browser.element('#subjects-label').should(have.exact_text('Subjects'))
+    browser.element('#subjectsInput').should(be.blank)
+    browser.element('#subjectsInput').type('Python').press_enter()
+    # browser.element('#subjectsInput').should(have.value('Python'))
+
+    browser.element('[for="hobbies-checkbox-1"]').should(have.exact_text('Sports'))
+    browser.element('[for="hobbies-checkbox-2"]').should(have.exact_text('Reading'))
+    browser.element('[for="hobbies-checkbox-3"]').should(have.exact_text('Music'))
+    browser.element('[for="hobbies-checkbox-1"]').click()
+    browser.element('[for="hobbies-checkbox-2"]').click()
+
+    browser.element('#currentAddress-label').should(have.exact_text('Current Address'))
+    browser.element('#currentAddress').should(be.blank)
+    browser.element('#currentAddress').should(have.attribute('placeholder').value('Current Address'))
+    browser.element('#currentAddress').type('Moscow')
+    # browser.element('#currentAddress').should(have.value('Moscow'))
+
+
+def test_temp():
+    browser.open('/')
+
+    browser.element('#stateCity-label').should(have.exact_text('State and City'))
+    browser.element('[class=" css-1wa3eu0-placeholder"]').should(have.exact_text('Select State'))
+
+
+...
