@@ -1,11 +1,10 @@
 import os.path
 from datetime import datetime
-
 from selene import browser, have, be
 
 
 def test_fill_practice_form():
-    browser.open('/')
+    browser.open('/automation-practice-form')
 
     browser.element('#userName-label').should(have.exact_text('Name'))
     browser.element('#firstName').should(be.blank)
@@ -69,7 +68,7 @@ def test_fill_practice_form():
     browser.element('#submit').press_enter()
 
     browser.element('.table-bordered').all('td').even.should(have.exact_texts(
-'Sergey Dikov',
+        'Sergey Dikov',
         'dikovsa@mail.ru',
         'Male',
         '9101234567',
@@ -79,4 +78,3 @@ def test_fill_practice_form():
         'test.jpg',
         'Moscow',
         'NCR Noida'))
-
