@@ -1,80 +1,116 @@
 import os.path
 from datetime import datetime
-from selene import browser, have, be
-
+from selene import browser, have, be, command, by
+import time
 
 def test_fill_practice_form():
-    browser.open('/automation-practice-form')
+    browser.open('/')
 
-    browser.element('#userName-label').should(have.exact_text('Name'))
-    browser.element('#firstName').should(be.blank)
-    browser.element('#firstName').should(have.attribute('placeholder').value('First Name'))
-    browser.element('#firstName').type('Sergey').press_enter()
+    # browser.element('[class="close"]').perform(command.js.click)
+    # time.sleep(2)
 
-    browser.element('#lastName').should(be.blank)
-    browser.element('#lastName').should(have.attribute('placeholder').value('Last Name'))
-    browser.element('#lastName').type('Dikov').press_enter()
+    '''Добавление в корзину через каталог'''
 
-    browser.element('#userEmail-label').should(have.exact_text('Email'))
-    browser.element('#userEmail').should(be.blank)
-    browser.element('#userEmail').should(have.attribute('placeholder').value('name@example.com'))
-    browser.element('#userEmail').type('dikovsa@mail.ru').press_enter()
+    browser.element('[data-test-id="button__catalog"]').click() #поиск по каталогу
+    browser.element('aside').element(by.text("Детские товары")).click()
+    time.sleep(3)
+    browser.all('[data-test-id="text__product-name"]')[2].should(
+        have.text('Игрушка-подушка "Гусь-обнимусь", с пледом подарок на 8 марта девушке')).click() #переход в карточку Игрушка-подушка "Гусь-обнимусь"
+    time.sleep(3)
+    browser.all('[class="background"]')[0].click() #выбор цвета товара
+    browser.element('[data-tooltip="ГУСЬ С ПЛЕДОМ 90 СМ"]').click().perform(command.js.scroll_into_view) #размер товара
+    time.sleep(1)
+    browser.element('[data-test-id="button__add-cart"]').click() #добавление товара в корзину
+    time.sleep(2)
+    browser.element('[class="cart-enter"]').click() #переход в корзину
+    browser.element('[data-test-id="text__full-price"]').should(have.text('2 000 ₽')) #проверка по цене
+    time.sleep(3)
 
-    browser.element('#genterWrapper > div.col-md-3.col-sm-12').should(have.exact_text('Gender'))
-    browser.all('[for*=gender-radio]').element_by(have.text('Male')).click()
+    ''' Добавление в корзину через поиск'''
 
-    browser.element('#userNumber-label').should(have.exact_text('Mobile(10 Digits)'))
-    browser.element('#userNumber-label > small').should(have.exact_text('(10 Digits)'))
-    browser.element('#userNumber').should(be.blank)
-    browser.element('#userNumber').should(have.attribute('placeholder').value('Mobile Number'))
-    browser.element('#userNumber').type('9101234567')
+    browser.element('[data-test-id="input__search"]').type('Игрушка-подушка Гусь-обнимусь').press_enter()
+    time.sleep(2)
+    browser.all('[data-test-id="text__product-name"]')[0].should(
+        have.text('Игрушка-подушка "Гусь-обнимусь", с пледом подарок на 8 марта девушке')).click()
+    browser.all('[class="background"]')[0].click() #выбор цвета товара
+    browser.element('[data-tooltip="ГУСЬ С ПЛЕДОМ 90 СМ"]').click().perform(command.js.scroll_into_view) #размер товара
+    time.sleep(1)
+    browser.element('[data-test-id="button__add-cart"]').click() #добавление товара в корзину
+    time.sleep(2)
+    browser.element('[class="cart-enter"]').click() #переход в корзину
+    browser.element('[data-test-id="text__product-price"]').should(have.text('4 000 ₽')) # проверка по цене
 
-    browser.element('#dateOfBirth-label').should(have.exact_text('Date of Birth'))
-    browser.element('#dateOfBirthInput').should(have.value(datetime.now().strftime("%d %b %Y")))
-    browser.element('#dateOfBirthInput').click()
-    browser.all('.react-datepicker__month-select>option').element_by(have.exact_text('June')).click()
-    browser.all('.react-datepicker__year-select>option').element_by(have.exact_text('1989')).click()
-    browser.all('*.react-datepicker__day').element_by(have.text('15')).click()
-    browser.element('#dateOfBirthInput').should(have.value('15 Jun 1989'))
 
-    browser.element('#subjects-label').should(have.exact_text('Subjects'))
-    browser.element('#subjectsInput').should(be.blank)
-    browser.element('#subjectsInput').type('Computer Science').press_enter()
 
-    browser.element('[for="hobbies-checkbox-1"]').should(have.exact_text('Sports'))
-    browser.element('[for="hobbies-checkbox-2"]').should(have.exact_text('Reading'))
-    browser.element('[for="hobbies-checkbox-3"]').should(have.exact_text('Music'))
-    browser.element('[for="hobbies-checkbox-1"]').click()
-    browser.element('[for="hobbies-checkbox-2"]').click()
+    '''Добавление в корзину через страницу избранное'''
+    browser.element('[data-test-id="button__catalog"]').click() # поиск по каталогу
+    browser.element('aside').element(by.text("Детские товары")).click()
+    time.sleep(3)
+    browser.all('[data-test-id="text__product-name"]')[2].should(
+        have.text('Игрушка-подушка "Гусь-обнимусь", с пледом подарок на 8 марта девушке')).click()
+    browser.all('[class="noselect product-card-like"]')[0].click()
 
-    browser.element('[for="uploadPicture"]').should(have.exact_text('Select picture'))
-    browser.element('#uploadPicture').send_keys(os.path.abspath('./img/test.jpg'))
+    browser.element('[data-test-id="button__wishes"]').click() # переход во вкладку избранное
+    # time.sleep(3)
+    # browser.element('[data-test-id="text__product-price"]').should(have.text('4 000 ₽'))  # проверка по цене
+    # #
+    # '''Очистка корзины и проверка , что корзина пуста'''
+    # browser.element('[data-test-id="button__delete-from-cart"]').click()
 
-    browser.element('#currentAddress-label').should(have.exact_text('Current Address'))
-    browser.element('#currentAddress').should(be.blank)
-    browser.element('#currentAddress').should(have.attribute('placeholder').value('Current Address'))
-    browser.element('#currentAddress').type('Moscow')
-    browser.element('#currentAddress').should(have.value('Moscow'))
 
-    browser.element('#stateCity-label').should(have.exact_text('State and City'))
-    browser.element('#state > div > div.css-1hwfws3 > div.css-1wa3eu0-placeholder').should(
-        have.exact_text('Select State'))
-    browser.element('#state > div > div.css-1wy0on6').click()
-    browser.element('#react-select-3-input').type('NCR').press_enter()
-    browser.element('#city > div > div.css-1hwfws3 > div.css-1wa3eu0-placeholder').should(
-        have.exact_text('Select City'))
-    browser.element('#react-select-4-input').type('Noida').press_enter()
 
-    browser.element('#submit').press_enter()
 
-    browser.element('.table-bordered').all('td').even.should(have.exact_texts(
-        'Sergey Dikov',
-        'dikovsa@mail.ru',
-        'Male',
-        '9101234567',
-        '15 June,1989',
-        'Computer Science',
-        'Sports, Reading',
-        'test.jpg',
-        'Moscow',
-        'NCR Noida'))
+
+
+
+
+
+
+  # browser.all('[data-test-id="button__show-more"]')[1].click()
+
+    #browser.element(by.text("LEGO")).element('./..').click()
+    # time.sleep(5)
+
+
+#  browser.element('[id="filters"]>[href="/category/khobbi-i-tvorchestvo-10008"]').click() #  поиск в каталоге по "Детские товары"
+
+   # browser.element('[id="filters"] [data-test-id="checkbox__filter"]')[237].click() # поиск по бренду LEGO
+
+    # browser.element('').perform(command.js.scroll_into_view).should(be.visible) # добавить скролл
+    #
+    # browser.all('[data-test-id="text__product-name"]')[0].should(
+    #     have.text('Конструктор LEGO Architecture, 21054, "Белый дом"')).click()
+    # browser.element('[data-test-id="button__add-cart"]').click()
+    # browser.element('[class="cart-enter"]').click()
+    #
+    # #
+    # ''' Добавление в корзину через поиск'''
+    # browser.element('[class="default-input"]').type('Игрушка-подушка Гусь-обнимусь').press_enter()
+    #
+    # browser.all('[data-test-id="text__product-name"]')[1].click()
+    # browser.element('[data-test-id="button__add-cart"]').click()
+    # browser.element('[class="cart-enter"]').click()
+    # #
+    # '''Добавление в корзину через страницу избранное'''
+    # browser.element('class="ui-link action-button"').click()
+    # browser.element('[data-test-id="button__add-to-cart" ]').click()
+
+
+
+    #browser.all('[data-test-id="text__price"]')[0].locate().text
+
+    # browser.all('[data-test-id="text__price"]')[0].should(have.text('651 ₽'))
+    # browser.all('[data-test-id="text__product-name"]')[0].locate().text
+    # browser.all('[data-test-id="text__old-price"]')[0].locate().text
+
+    # browser.all('[data-test-id="text__product-name"]')[0].locate().text
+    # browser.all('[data-test-id="text__product-name"]')[0].should(
+    #     have.text('Конструктор Звездные Войны (Star Wars) Звездный разрушитель / Истребитель / Венатор'))
+    # time.sleep(5)
+
+   # browser.all('[data-test-id="text__product-name"]')[1].should(
+   #      have.text('Конструктор LEGO Architecture, 21054, "Белый дом"')).click()
+   #  browser.element('[data-test-id="button__add-cart"]').click()
+   #  browser.element('[class="cart-enter"]').click()
+   #  #
+
